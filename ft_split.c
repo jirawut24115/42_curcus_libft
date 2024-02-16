@@ -6,80 +6,76 @@
 /*   By: jichompo <jichompo@>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/04 11:00:11 by jichompo          #+#    #+#             */
-/*   Updated: 2024/02/08 21:40:11 by jichompo         ###   ########.fr       */
+/*   Updated: 2024/02/16 20:06:29 by jichompo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_word_count(char *str, char charset)
+static	void	ft_free(char **result)
 {
-	int	word_count;
+	int	index;
 
-	word_count = 0;
-	while (*str)
-	{
-		if (*str == charset)
-			str++;
-		else
-		{
-			if (*(str + 1) == charset || *(str + 1) == '\0')
-				word_count++;
-			str++;
-		}
-	}
-	return (word_count);
+	index = 0;
+	while (result[index])
+		free(result[index]);
+	free(result);
 }
 
-char	*ft_create_word(char *str, char charset)
+static	size_t	count_words(char const *s, char c)
 {
-	char	*result;
-	int		len;
-	int		index;
+	size_t	index;
+	size_t	words;
 
-	len = 0;
 	index = 0;
-	while (*str != charset)
+	words = 0;
+	while (s[index])
 	{
-		len++;
-		str++;
-	}
-	result = malloc(sizeof(char) + len + 1);
-	str -= len;
-	while (*str != charset)
-	{
-		result[index] = *str;
+		if ((s[index + 1] == c || s[index + 1] == '\0') && s[index] != c)
+			words++;
 		index++;
-		str++;
 	}
-	result[index] = '\0';
+	return (words);
+}
+
+static	char	**write_result(char const *s, char c, char	**result)
+{
+	size_t	start;
+	size_t	index;
+	size_t	word;
+
+	start = 0;
+	index = 0;
+	word = 0;
+	while (s[index])
+	{
+		if ((s[index + 1] == c || s[index + 1] == '\0') && s[index] != c)
+		{
+			result[word] = ft_substr(s, start, index - start + 1);
+			if (!result[word])
+			{
+				ft_free(result);
+				return (0);
+			}
+			word++;
+		}
+		if (s[index] == c && (s[index + 1] != c || s[index + 1] != '\0'))
+			start = index + 1;
+		index++;
+	}
+	result[word] = 0;
 	return (result);
 }
 
-char	**ft_split(char const *str, char charset)
+char	**ft_split(char const *s, char c)
 {
 	char	**result;
-	int		word_count;
-	int		index;
-	int		len;
 
-	word_count = ft_word_count((char *)str, charset);
-	result = malloc(sizeof(char *) * (word_count + 1));
-	index = 0;
-	while (*str && index < word_count)
-	{
-		len = 0;
-		while (*str == charset)
-			str++;
-		while (*(str + len) != charset && *(str + len))
-			len++;
-		if (len > 0)
-		{
-			result[index] = ft_create_word((char *)str, charset);
-			index++;
-		}
-		str += len;
-	}
-	result[word_count] = 0;
+	if (!s)
+		return (0);
+	result = malloc(sizeof(char *) * (count_words(s, c) + 1));
+	if (!result)
+		return (0);
+	result = write_result(s, c, result);
 	return (result);
 }

@@ -6,7 +6,7 @@
 /*   By: jichompo <jichompo@>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/04 11:44:51 by jichompo          #+#    #+#             */
-/*   Updated: 2024/02/09 11:08:48 by jichompo         ###   ########.fr       */
+/*   Updated: 2024/02/16 19:32:08 by jichompo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ static int	ft_find_len(long int num)
 	int	len;
 
 	len = 0;
+	if (num == 0)
+		return (1);
 	if (num < 0)
 	{
 		num *= -1;
